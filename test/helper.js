@@ -3,9 +3,13 @@
 /* global describe: false */
 /* global it: false */
 
+/* jshint -W106 */
+var COV = process.env.npm_lifecycle_event === 'coverage';
+/* jshint +W106 */
+
 var assert = require('assert')
   , path = require('path')
-  , pgPass = require( path.join('..', process.env.COV__ ? 'lib-cov' : 'lib', 'libPgPass') )
+  , helper = require( path.join('..', COV ? 'lib-cov' : 'lib', 'helper') )
   , util = require('util')
   , Stream = require('resumer')
   , clone = require('clone')
@@ -19,7 +23,7 @@ describe('#getFileName()', function(){
             APPDATA : 'C:\\tmp'
         };
         assert.equal(
-            pgPass.getFileName(env) ,
+            helper.getFileName(env) ,
             process.platform === 'win32' ? 'C:\\tmp\\postgresql\\pgpass.conf' : '/tmp/.pgpass'
         );
     });
@@ -27,24 +31,24 @@ describe('#getFileName()', function(){
     it('should return the the path to PGPASSFILE if set', function(){
         var env = {};
         var something = env.PGPASSFILE = 'xxx';
-        assert.equal( pgPass.getFileName(env), something );
+        assert.equal( helper.getFileName(env), something );
     });
 });
 
 
 describe('#isWin', function(){
     it('should represent the platform and can be changed', function(){
-        var orgIsWin = pgPass.isWin;
+        var orgIsWin = helper.isWin;
         var test = 'something';
         var isWin = process.platform === 'win32';
 
-        assert.equal(isWin, pgPass.isWin);
+        assert.equal(isWin, helper.isWin);
 
-        pgPass.isWin = test;
-        assert.equal(test, pgPass.isWin);
+        helper.isWin = test;
+        assert.equal(test, helper.isWin);
 
-        pgPass.isWin = orgIsWin;
-        assert.equal(isWin, pgPass.isWin);
+        helper.isWin = orgIsWin;
+        assert.equal(isWin, helper.isWin);
     });
 });
 
@@ -67,7 +71,7 @@ describe('#usePgPass()', function(){
         );
 
         it(msg, function(){
-            assert.equal( pgPass.usePgPass({ mode : decPerm }) === res , true );
+            assert.equal( helper.usePgPass({ mode : decPerm }) === res , true );
         });
     });
 });
@@ -76,7 +80,7 @@ describe('#usePgPass()', function(){
 describe('#parseLine()', function(){
 
     it('should parse a simple line', function(){
-        var res = pgPass.parseLine( 'host:port:dbase:user:pass' );
+        var res = helper.parseLine( 'host:port:dbase:user:pass' );
 
         assert.deepEqual(res, {
             'host'     : 'host' ,
@@ -88,13 +92,13 @@ describe('#parseLine()', function(){
     });
 
     it('should handle comments', function(){
-        var res = pgPass.parseLine( '  # some random comment' );
+        var res = helper.parseLine( '  # some random comment' );
         assert.equal(res, null);
     });
 
     it('should handle escaped \':\' and \'\\\' right', function(){
         /* jshint -W044 */
-        var res = pgPass.parseLine('some\\:host:port:some\\\\database:some\;user:somepass');
+        var res = helper.parseLine('some\\:host:port:some\\\\database:some\;user:somepass');
         /* jshint +W044 */
         assert.deepEqual(res, {
             'host'     : 'some:host' ,
@@ -115,7 +119,7 @@ describe('#parseLine()', function(){
         ];
 
         tests.forEach(function(line){
-            var res = pgPass.parseLine(line);
+            var res = helper.parseLine(line);
             assert.equal(null, res);
         });
     });
@@ -125,7 +129,7 @@ describe('#parseLine()', function(){
 
 describe('#isValidEntry()', function(){
     it('shouldn\'t report valid entries', function(){
-        assert(pgPass.isValidEntry({
+        assert(helper.isValidEntry({
             'host'     : 'some:host' ,
             'port'     : 100 ,
             'database' : 'some\\database' ,
@@ -134,7 +138,7 @@ describe('#isValidEntry()', function(){
             /* jshint +W044 */
             'password' : 'somepass'
         }));
-        assert(pgPass.isValidEntry({
+        assert(helper.isValidEntry({
             'host'     : '*' ,
             'port'     : '*' ,
             'database' : '*' ,
@@ -144,16 +148,16 @@ describe('#isValidEntry()', function(){
     });
 
     it('should find invalid entries', function(){
-        assert(!pgPass.isValidEntry({
+        assert(!helper.isValidEntry({
             'host'     : ''
         }));
-        assert(!pgPass.isValidEntry({
+        assert(!helper.isValidEntry({
             'host'     : 'host' ,
             'port'     : '100' ,
             'database' : 'database' ,
             'user'     : 'user'
         }));
-        assert(!pgPass.isValidEntry({
+        assert(!helper.isValidEntry({
             'host'     : 'host' ,
             'port'     : -100 ,
             'database' : 'database' ,
@@ -174,7 +178,7 @@ describe('#read()', function(){
     it('should handle a string', function(){
         var resReturn, resCb;
 
-        resReturn = pgPass.read(fileContent, function(err, res){
+        resReturn = helper.read(fileContent, function(err, res){
             resCb = res;
         });
 
@@ -186,7 +190,7 @@ describe('#read()', function(){
         var resReturn, resCb;
         var buf = new Buffer(fileContent);
 
-        resReturn = pgPass.read(buf, function(err, res){
+        resReturn = helper.read(buf, function(err, res){
             resCb = res;
         });
 
@@ -198,7 +202,7 @@ describe('#read()', function(){
         var resReturn, resCb;
         var stream = new Stream().queue(fileContent).end();
 
-        resReturn = pgPass.read(stream, function(err, res){
+        resReturn = helper.read(stream, function(err, res){
             assert.equal(err, null);
             assert.notEqual(res, null);
             assert.notEqual(res, []);
@@ -247,36 +251,36 @@ describe('#getPassword()', function(){
     it('should return a password', function(){
         var ret;
 
-        ret = pgPass.getPassword(conn1, creds);
+        ret = helper.getPassword(conn1, creds);
         assert.equal(ret, creds[0].password);
 
-        ret = pgPass.getPassword(conn2, creds);
+        ret = helper.getPassword(conn2, creds);
         assert.equal(ret, creds[1].password);
     });
 
     it('should not return and not fill in a password', function(){
         var ret;
 
-        ret = pgPass.getPassword(conn3, undefined, true);
+        ret = helper.getPassword(conn3, undefined, true);
         assert(!ret);
         assert(!conn3.password);
 
-        ret = pgPass.getPassword(conn1, undefined, true);
+        ret = helper.getPassword(conn1, undefined, true);
         assert(!ret);
         assert(!conn1.password);
 
-        ret = pgPass.getPassword({}, creds, true);
+        ret = helper.getPassword({}, creds, true);
         assert(!ret);
     });
 
     it('should return and fill in a password', function(){
         var ret;
 
-        ret = pgPass.getPassword(conn1, creds, true);
+        ret = helper.getPassword(conn1, creds, true);
         assert.equal(ret, creds[0].password);
         assert.equal(conn1.password, creds[0].password);
 
-        ret = pgPass.getPassword(conn2, creds, true);
+        ret = helper.getPassword(conn2, creds, true);
         assert.equal(ret, creds[1].password);
         assert.equal(conn2.password, creds[1].password);
     });

@@ -3,9 +3,13 @@
 /* global describe: false */
 /* global it: false */
 
+/* jshint -W106 */
+var COV = process.env.npm_lifecycle_event === 'coverage';
+/* jshint +W106 */
+
 var assert = require('assert')
   , path = require('path')
-  , pgPass = require( path.join('..', process.env.COV__ ? 'lib-cov' : 'lib') )
+  , pgPass = require( path.join('..', COV ? 'lib-cov' : 'lib' , 'index') )
   , clone = require('clone')
 ;
 
@@ -19,7 +23,7 @@ var conn = {
 
 describe('MAIN', function(){
     describe('#(conn, cb)', function(){
-        it('should ignore non existant file', function(done){
+        it('should ignore non existent file', function(done){
             process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
             pgPass(conn, function(res){
                 assert('undefined' === typeof res);
@@ -37,7 +41,7 @@ describe('MAIN', function(){
     });
 
     describe('#(conn)', function(){
-        it('should ignore non existant file', function(){
+        it('should ignore non existent file', function(){
             process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
             assert(!pgPass(conn));
         });
