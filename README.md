@@ -1,9 +1,9 @@
-# node-pgpass
+# pgpass
 
 ## Install
 
 ```sh
-npm install --save pgpass
+npm install --save hoegaarden/pgpass
 ```
 
 ## Usage
@@ -11,8 +11,8 @@ npm install --save pgpass
 var pgPass = require('pgpass');
 
 var conn_info = {
-    'host' : 'pgserver' ,
-	'user' : 'the_user_name' ,
+  'host' : 'pgserver' ,
+  'user' : 'the_user_name' ,
 };
 
 // --- sync ----
@@ -22,7 +22,7 @@ conn_info.password = pgPass(conn_info);
 // ---- async ----
 pgPass(conn_info, function(pass){
 conn_info.password = pass;
-	// connect to postgresql server
+  // connect to postgresql server
 });
 ```
 

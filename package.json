@@ -1,5 +1,5 @@
 {
-    "name": "node-pgpass",
+    "name": "pgpass",
     "version": "0.0.1",
     "description": "Module for reading .pgpass",
     "main": "lib/index",
