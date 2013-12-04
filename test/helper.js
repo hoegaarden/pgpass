@@ -24,7 +24,7 @@ describe('#warnTo()', function(){
         assert(org === stdErr);
     });
 
-    it('should not caus problems to give a non-stream', function(){
+    it('should not cause problems to give a non-stream', function(){
         var orgStream = helper.warnTo(null);
         assert( false === helper.usePgPass({mode:6}) );
         helper.warnTo(orgStream);

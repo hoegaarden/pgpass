@@ -38,7 +38,7 @@ describe('MAIN', function(){
             });
         });
 
-        it('should not read .pgpass because og PGPASSWORD', function(done){
+        it('should not read .pgpass because of PGPASSWORD', function(done){
             process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
             process.env.PGPASSWORD = 'something';
             pgPass(conn, function(res){
@@ -60,7 +60,7 @@ describe('MAIN', function(){
             assert(pgPass(conn) === 'pass2');
         });
 
-        it('should not read .pgpass because og PGPASSWORD', function(){
+        it('should not read .pgpass because of PGPASSWORD', function(){
             process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
             process.env.PGPASSWORD = 'something';
             assert(undefined === pgPass(conn));
