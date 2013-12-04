@@ -1,23 +1,23 @@
 {
-    "name": "pgpass",
-    "version": "0.0.1",
-    "description": "Module for reading .pgpass",
-    "main": "lib/index",
-    "scripts": {
-        "test": "npm run hint && mocha && npm run coverage",
-        "coverage": "rm -rf -- lib-cov ; PATH=$PATH:./node_modules/jscoverage/bin ; jscoverage lib lib-cov && mocha -R html-cov > coverage.html",
-        "hint": "PATH=$PATH:./node_modules/jshint/bin ; jshint --verbose lib test"
-    },
-    "author": "Hannes Hörl <hannes.hoerl@snowreporter.com>",
-    "license": "BSD-2-Clause",
-    "dependencies": {
-        "split": "~0.2.10"
-    },
-    "devDependencies": {
-        "mocha": "~1.14.0",
-        "resumer": "0.0.0",
-        "jscoverage": "~0.3.8",
-        "clone": "~0.1.11",
-        "jshint": "~2.3.0"
-    }
+  "name": "pgpass",
+  "version": "0.0.1",
+  "description": "Module for reading .pgpass",
+  "main": "lib/index",
+  "scripts": {
+    "pretest": "chmod 600 ./test/_pgpass",
+    "test": "npm run hint && mocha -R list && npm run coverage",
+    "coverage": "rm -rf -- lib-cov ; PATH=$PATH:./node_modules/jscoverage/bin ; jscoverage lib lib-cov && mocha -R html-cov > coverage.html",
+    "hint": "PATH=$PATH:./node_modules/jshint/bin ; jshint --verbose lib test"
+  },
+  "author": "Hannes Hörl <hannes.hoerl@snowreporter.com>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "split": "~0.2.10"
+  },
+  "devDependencies": {
+    "mocha": "~1.14.0",
+    "resumer": "0.0.0",
+    "jscoverage": "~0.3.8",
+    "jshint": "~2.3.0"
+  }
 }

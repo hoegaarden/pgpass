@@ -10,7 +10,6 @@ var COV = process.env.npm_lifecycle_event === 'coverage';
 var assert = require('assert')
   , path = require('path')
   , pgPass = require( path.join('..', COV ? 'lib-cov' : 'lib' , 'index') )
-  , clone = require('clone')
 ;
 
 
@@ -26,7 +25,7 @@ describe('MAIN', function(){
         it('should ignore non existent file', function(done){
             process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
             pgPass(conn, function(res){
-                assert('undefined' === typeof res);
+                assert(undefined === res);
                 done();
             });
         });
@@ -35,6 +34,16 @@ describe('MAIN', function(){
             process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
             pgPass(conn, function(res){
                 assert('pass2' === res);
+                done();
+            });
+        });
+
+        it('should not read .pgpass because og PGPASSWORD', function(done){
+            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
+            process.env.PGPASSWORD = 'something';
+            pgPass(conn, function(res){
+                assert(undefined === res);
+                delete process.env.PGPASSWORD;
                 done();
             });
         });
@@ -49,6 +58,13 @@ describe('MAIN', function(){
         it('should read .pgpass', function(){
             process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
             assert(pgPass(conn) === 'pass2');
+        });
+
+        it('should not read .pgpass because og PGPASSWORD', function(){
+            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
+            process.env.PGPASSWORD = 'something';
+            assert(undefined === pgPass(conn));
+            delete process.env.PGPASSWORD;
         });
     });
 });

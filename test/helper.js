@@ -2,6 +2,8 @@
 
 /* global describe: false */
 /* global it: false */
+/* global after: false */
+/* global before: false */
 
 /* jshint -W106 */
 var COV = process.env.npm_lifecycle_event === 'coverage';
@@ -12,8 +14,45 @@ var assert = require('assert')
   , helper = require( path.join('..', COV ? 'lib-cov' : 'lib', 'helper') )
   , util = require('util')
   , Stream = require('resumer')
-  , clone = require('clone')
 ;
+
+
+describe('#warnTo()', function(){
+    it('should be process.stderr by default', function(){
+        var stdErr = process.stderr;
+        var org = helper.warnTo( stdErr );
+        assert(org === stdErr);
+    });
+
+    it('should not caus problems to give a non-stream', function(){
+        var orgStream = helper.warnTo(null);
+        assert( false === helper.usePgPass({mode:6}) );
+        helper.warnTo(orgStream);
+    });
+
+    it('should write warnings to our writable stream', function(done){
+        var stream = new Stream();
+
+        var orgStream = helper.warnTo(stream);
+        var orgIsWin = helper.isWin;
+        helper.isWin = false;
+
+        assert( process.stderr === orgStream );
+        assert( false === helper.usePgPass({mode:6}) );
+
+        stream.on('data', function(d){
+            assert(
+                0 === d.indexOf('WARNING: password file "<unkn>" is not a plain file')
+            );
+
+            helper.orgisWin = orgIsWin;
+            helper.warnTo(orgStream);
+            stream.end();
+
+            done();
+        });
+    });
+});
 
 
 describe('#getFileName()', function(){
@@ -54,15 +93,19 @@ describe('#isWin', function(){
 
 
 describe('#usePgPass()', function(){
+    // http://lxr.free-electrons.com/source/include/uapi/linux/stat.h
     var testResults = {
-        '660' : false ,
-        '606' : false ,
-        '100' : true ,
-        '600' : true
+        '0100660' : false ,
+        '0100606' : false ,
+        '0100100' : true ,
+        '0100600' : true ,
+        '0040600' : false , // is a directory
+        '0060600' : false   // is a blockdevice
     };
 
+    var org = helper.isWin; // pretend we are UNIXish for permission tests
+    helper.isWin = true;
     Object.keys(testResults).forEach(function(octPerm){
-
         var decPerm = Number(parseInt(octPerm, 8));
         var res = testResults[octPerm];
         var msg = util.format(
@@ -73,6 +116,20 @@ describe('#usePgPass()', function(){
         it(msg, function(){
             assert.equal( helper.usePgPass({ mode : decPerm }) === res , true );
         });
+    });
+    helper.isWin = org;
+
+    it('should always return false if PGPASSWORD is set', function(){
+        process.env.PGPASSWORD = 'some';
+        assert( false === helper.usePgPass() );
+        delete process.env.PGPASSWORD;
+    });
+
+    it('should always return true on windows', function(){
+        var org = helper.isWin;
+        helper.isWin = true;
+        assert( helper.usePgPass() );
+        helper.isWin = org;
     });
 });
 
