@@ -9,7 +9,7 @@
     "coverage": "rm -rf -- lib-cov ; PATH=$PATH:./node_modules/jscoverage/bin ; jscoverage lib lib-cov && mocha -R html-cov > coverage.html",
     "hint": "PATH=$PATH:./node_modules/jshint/bin ; jshint --verbose lib test"
   },
-  "author": "Hannes Hörl <hannes.hoerl@snowreporter.com>",
+  "author": "Hannes Hörl <hannes.hoerl+pgpass@snowreporter.com>",
   "license": "BSD-2-Clause",
   "dependencies": {
     "split": "~0.2.10"
@@ -19,5 +19,17 @@
     "resumer": "0.0.0",
     "jscoverage": "~0.3.8",
     "jshint": "~2.3.0"
+  },
+  "keywords": [
+    "postgres",
+    "pg",
+    "pgpass",
+    "password",
+    "postgresql"
+  ],
+  "bugs": "https://github.com/hoegaarden/pgpass/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hoegaarden/pgpass.git"
   }
 }

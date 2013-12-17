@@ -1,5 +1,7 @@
 # pgpass
 
+[![Build Status](https://travis-ci.org/hoegaarden/pgpass.png?branch=master)](https://travis-ci.org/hoegaarden/pgpass)
+
 ## Install
 
 ```sh
@@ -10,14 +12,14 @@ npm install --save hoegaarden/pgpass
 ```js
 var pgPass = require('pgpass');
 
-var conn_info = {
+var connInfo = {
   'host' : 'pgserver' ,
   'user' : 'the_user_name' ,
 };
 
 
 // ---- async ----
-pgPass(conn_info, function(pass){
+pgPass(connInfo, function(pass){
   conn_info.password = pass;
   // connect to postgresql server
 });
