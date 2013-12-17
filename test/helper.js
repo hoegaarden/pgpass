@@ -225,79 +225,19 @@ describe('#isValidEntry()', function(){
 });
 
 
-describe('#read()', function(){
-    var fileContent = [
-        'somehost:112233:somedb:someuser:somepass' ,
-        'otherhost:4:otherdb:other\\:user:' ,
-        'thirdhost:5:thirddb:thirduser:thirdpass'
-    ].join('\n');
-
-    it('should handle a string', function(){
-        var resReturn, resCb;
-
-        resReturn = helper.read(fileContent, function(err, res){
-            resCb = res;
-        });
-
-        assert.notEqual( resReturn, [] );
-        assert.deepEqual( resReturn, resCb );
-    });
-
-    it('should handle a buffer', function(){
-        var resReturn, resCb;
-        var buf = new Buffer(fileContent);
-
-        resReturn = helper.read(buf, function(err, res){
-            resCb = res;
-        });
-
-        assert.notEqual( resReturn, [] );
-        assert.deepEqual( resReturn, resCb );
-    });
-
-    it('should handle a stream', function(done){
-        var resReturn, resCb;
-        var stream = new Stream().queue(fileContent).end();
-
-        resReturn = helper.read(stream, function(err, res){
-            assert.equal(err, null);
-            assert.notEqual(res, null);
-            assert.notEqual(res, []);
-            done();
-        });
-
-        assert.equal( resReturn, null );
-    });
-
-});
 
 
 describe('#getPassword()', function(){
-    var creds = [
-        {
-            'host'     : 'host1' ,
-            'port'     : '100' ,
-            'database' : 'database1' ,
-            'user'     : 'user1' ,
-            'password' : 'thepassword1'
-        } , {
-            'host'     : '*' ,
-            'port'     : '*' ,
-            'database' : 'database2' ,
-            'user'     : '*' ,
-            'password' : 'thepassword2'
-        }
-    ];
+    var creds =
+        'host1:100:database1:user1:thepassword1' + '\n' +
+        '*:*:database2:*:thepassword2' + '\n'
+    ;
+
     var conn1 = {
         'host'     : 'host1' ,
         'port'     : 100 ,
         'database' : 'database1' ,
         'user'     : 'user1'
-    };
-    var conn2 = {
-        'host'     : 'host2' ,
-        'database' : 'database2' ,
-        'user'     : 'user2'
     };
     var conn3 = {
         'host'     : 'host3' ,
@@ -305,40 +245,40 @@ describe('#getPassword()', function(){
         'user'     : 'user3'
     };
 
-    it('should return a password', function(){
-        var ret;
 
-        ret = helper.getPassword(conn1, creds);
-        assert.equal(ret, creds[0].password);
+    it('should not get password for non-matching conn_info', function(done){
+        var st = new Stream();
 
-        ret = helper.getPassword(conn2, creds);
-        assert.equal(ret, creds[1].password);
+        helper.getPassword(conn3, st, function(pass){
+            assert.deepEqual(pass, undefined);
+            done();
+        });
+
+        st.write(creds);
+        st.end();
     });
 
-    it('should not return and not fill in a password', function(){
-        var ret;
+    it('should get password for matching conn_info', function(done){
+        var st = new Stream();
 
-        ret = helper.getPassword(conn3, undefined, true);
-        assert(!ret);
-        assert(!conn3.password);
+        helper.getPassword(conn1, st, function(pass){
+            assert.notDeepEqual(pass, undefined);
+            done();
+        });
 
-        ret = helper.getPassword(conn1, undefined, true);
-        assert(!ret);
-        assert(!conn1.password);
-
-        ret = helper.getPassword({}, creds, true);
-        assert(!ret);
+        st.write(creds);
+        st.end();
     });
 
-    it('should return and fill in a password', function(){
-        var ret;
+    it('should ignore no password on any error', function(done){
+        var st = new Stream();
 
-        ret = helper.getPassword(conn1, creds, true);
-        assert.equal(ret, creds[0].password);
-        assert.equal(conn1.password, creds[0].password);
+        helper.getPassword({}, st, function(pass){
+            assert.deepEqual(pass, undefined);
+            done();
+        });
 
-        ret = helper.getPassword(conn2, creds, true);
-        assert.equal(ret, creds[1].password);
-        assert.equal(conn2.password, creds[1].password);
+        st.emit('error', new Error('just some error'));
+        st.end();
     });
 });

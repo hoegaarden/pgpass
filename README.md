@@ -15,22 +15,19 @@ var conn_info = {
   'user' : 'the_user_name' ,
 };
 
-// --- sync ----
-conn_info.password = pgPass(conn_info);
-// connect to postgresql server
 
 // ---- async ----
 pgPass(conn_info, function(pass){
-conn_info.password = pass;
+  conn_info.password = pass;
   // connect to postgresql server
 });
 ```
 
 ## Description
 
-This module tries to read the `~/.pgpass ` file (or the equivalent for windows systems). If the environment variable `PGPASSFILE` is set, this file is used instead. If everything goes right, the password from said file is returned (in syn mode) or given to the callback (async mode); if the password cannot be read `null` is returned or passed to the callback.
+This module tries to read the `~/.pgpass` file (or the equivalent for windows systems). If the environment variable `PGPASSFILE` is set, this file is used instead. If everything goes right, the password from said file is to the callback; if the password cannot be read `undefined` is passed to the callback.
 
-Cases where `null` is returned:
+Cases where `undefined` is returned:
 
 - the environment variable `PGPASSWORD` is set
 - the file cannot be read (wrong permissions, no such file, ...)

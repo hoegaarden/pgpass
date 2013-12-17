@@ -21,50 +21,32 @@ var conn = {
 };
 
 describe('MAIN', function(){
-    describe('#(conn, cb)', function(){
-        it('should ignore non existent file', function(done){
-            process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
-            pgPass(conn, function(res){
-                assert(undefined === res);
-                done();
-            });
-        });
-
-        it('should read .pgpass', function(done){
-            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
-            pgPass(conn, function(res){
-                assert('pass2' === res);
-                done();
-            });
-        });
-
-        it('should not read .pgpass because of PGPASSWORD', function(done){
-            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
-            process.env.PGPASSWORD = 'something';
-            pgPass(conn, function(res){
-                assert(undefined === res);
-                delete process.env.PGPASSWORD;
-                done();
-            });
+    it('should ignore non existent file', function(done){
+        process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
+        pgPass(conn, function(res){
+            assert(undefined === res);
+            done();
         });
     });
 
-    describe('#(conn)', function(){
-        it('should ignore non existent file', function(){
-            process.env.PGPASSFILE = path.join(__dirname, '_no_such_file_');
-            assert(!pgPass(conn));
-        });
 
-        it('should read .pgpass', function(){
-            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
-            assert(pgPass(conn) === 'pass2');
+    it('should read .pgpass', function(done){
+        process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
+        pgPass(conn, function(res){
+            assert.strictEqual('pass2', res);
+            done();
         });
+    });
 
-        it('should not read .pgpass because of PGPASSWORD', function(){
-            process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
-            process.env.PGPASSWORD = 'something';
-            assert(undefined === pgPass(conn));
+
+    it('should not read .pgpass because of PGPASSWORD', function(done){
+        process.env.PGPASSFILE = path.join(__dirname, '_pgpass');
+        process.env.PGPASSWORD = 'something';
+        pgPass(conn, function(res){
+            assert(undefined === res);
             delete process.env.PGPASSWORD;
+            done();
         });
     });
+
 });
