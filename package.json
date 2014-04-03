@@ -5,20 +5,23 @@
   "main": "lib/index",
   "scripts": {
     "pretest": "chmod 600 ./test/_pgpass",
-    "test": "npm run hint && mocha -R list && npm run coverage",
-    "coverage": "rm -rf -- lib-cov ; PATH=$PATH:./node_modules/jscoverage/bin ; jscoverage lib lib-cov && mocha -R html-cov > coverage.html",
-    "hint": "PATH=$PATH:./node_modules/jshint/bin ; jshint --verbose lib test"
+    "test": "npm run hint && mocha --recursive -R list && npm run coverage",
+    "coverage": "rm -rf -- lib-cov ; jscoverage lib lib-cov && mocha --recursive -R html-cov > coverage.html",
+    "hint": "jshint --verbose lib test"
   },
   "author": "Hannes Hörl <hannes.hoerl+pgpass@snowreporter.com>",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "split": "~0.2.10"
+    "split": "^0.2.10"
   },
   "devDependencies": {
     "mocha": "~1.14.0",
     "resumer": "0.0.0",
     "jscoverage": "~0.3.8",
-    "jshint": "~2.3.0"
+    "jshint": "~2.3.0",
+    "pg": "^2.11.1",
+    "pg-escape": "0.0.2",
+    "tmp": "0.0.23"
   },
   "keywords": [
     "postgres",
