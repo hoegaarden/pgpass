@@ -39,7 +39,10 @@ describe('using same password file', function(){
 	var pg = require('pg');
 	var pgNative = pg.native;
 
-	var config = { user : USER };
+	var config = {
+		user     : USER ,
+		database : 'postgres'
+	};
 
 	it('the JS client can connect', function(done){
 		pg.connect(config, checkConnection.bind(null, done));
