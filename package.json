@@ -1,6 +1,6 @@
 {
   "name": "pgpass",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Module for reading .pgpass",
   "main": "lib/index",
   "scripts": {
@@ -12,16 +12,17 @@
   "author": "Hannes Hörl <hannes.hoerl+pgpass@snowreporter.com>",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "split": "~0.3"
+    "split": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "~1.14.0",
+    "jscoverage": "^0.6.0",
+    "jshint": "^2.9.2",
+    "mocha": "^2.5.3",
+    "pg": "^4.5.6",
+    "pg-escape": "^0.2.0",
+    "pg-native": "^1.10.0",
     "resumer": "0.0.0",
-    "jscoverage": "~0.3.8",
-    "jshint": "~2.3.0",
-    "pg": "~2.11.1",
-    "pg-escape": "0.0.2",
-    "tmp": "0.0.23"
+    "tmp": "0.0.28"
   },
   "keywords": [
     "postgres",
