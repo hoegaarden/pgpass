@@ -22,7 +22,8 @@
     "pg-escape": "^0.2.0",
     "pg-native": "^1.10.0",
     "resumer": "0.0.0",
-    "tmp": "0.0.28"
+    "tmp": "0.0.28",
+    "which": "^1.2.10"
   },
   "keywords": [
     "postgres",
