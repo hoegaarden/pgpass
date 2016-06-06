@@ -10,7 +10,7 @@
     "hint": "jshint --verbose lib test"
   },
   "author": "Hannes Hörl <hannes.hoerl+pgpass@snowreporter.com>",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "dependencies": {
     "split": "^1.0.0"
   },
