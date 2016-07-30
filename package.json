@@ -1,6 +1,6 @@
 {
   "name": "pgpass",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Module for reading .pgpass",
   "main": "lib/index",
   "scripts": {
