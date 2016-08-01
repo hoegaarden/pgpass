@@ -43,7 +43,7 @@ if (lsofBin) {
 		var out = '';
 		var err = '';
 		var lsofArgs = [
-		    '-Fn', '-p', process.pid
+		    '-w', '-Fn', '-p', process.pid
 		];
 		var lsof  = spawn(lsofBin, lsofArgs);
 
