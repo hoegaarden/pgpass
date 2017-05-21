@@ -31,35 +31,36 @@ tmp.setGracefulCleanup();
  *   - JS client
  *   - psql
  */
-describe('using same password file', function(){
-	before(pre);
-	after(delUser);
+if (process.env.RUN_INTEGRATION_TESTS) {
+	describe('using same password file', function(){
+		before(pre);
+		after(delUser);
 
-	// load the module after setting up PGPASSFILE
-	var pg = require('pg');
-	var pgNative = pg.native;
+		// load the module after setting up PGPASSFILE
+		var pg = require('pg');
+		var pgNative = pg.native;
 
-	var config = {
-		user     : USER ,
-		database : 'postgres'
-	};
+		var config = {
+			user     : USER ,
+			database : 'postgres'
+		};
 
-	it('the JS client can connect', function(done){
-		pg.connect(config, checkConnection.bind(null, done));
+		it('the JS client can connect', function(done){
+			pg.connect(config, checkConnection.bind(null, done));
+		});
+
+		it('the native client can connect', function(done){
+			pgNative.connect(config, checkConnection.bind(null, done));
+		});
+
+		it('the psql client can connect', function(done){
+			runPsqlCmd(TEST_QUERY, function(err, res){
+				checkQueryRes(err, res.replace(/\n$/, ''));
+				done();
+			}, USER);
+		});
 	});
-
-	it('the native client can connect', function(done){
-		pgNative.connect(config, checkConnection.bind(null, done));
-	});
-
-	it('the psql client can connect', function(done){
-		runPsqlCmd(TEST_QUERY, function(err, res){
-			checkQueryRes(err, res.replace(/\n$/, ''));
-			done();
-		}, USER);
-	});
-});
-
+}
 
 
 /**
@@ -114,7 +115,7 @@ function setupPassFile(cb) {
 		if (err) {
 			return cb(err);
 		}
-	
+
 		var str = '*:*:*:__USER__:__PASS__'
 			.replace('__USER__', pgEsc(USER))
 			.replace('__PASS__', pgEsc(PASS))
