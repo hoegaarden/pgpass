@@ -1,11 +1,17 @@
 language: node_js
 
-node_js:
-  - "0.10"
-  - "0.12"
-  - "4"
-  - "5"
-  - "6"
+matrix:
+  include:
+  - node_js: "8"
+    dist: trusty
+  - node_js: "9"
+    dist: trusty
+  - node_js: "10"
+    dist: bionic
+  - node_js: "11"
+    dist: bionic
+  - node_js: "12"
+    dist: bionic
 
 env:
   global:
@@ -19,3 +25,16 @@ addons:
     packages:
       - g++-4.8
       - lsof
+
+services:
+  - postgresql
+before_install:
+  - sudo apt-get update
+  - sudo apt-get --yes remove postgresql\*
+  - sudo apt-get install -y postgresql-11 postgresql-client-11
+  - sudo cp /etc/postgresql/{9.6,11}/main/pg_hba.conf
+  - sudo service postgresql restart 11
+before_script:
+  - psql --version
+addons:
+  postgresql: "11.2"

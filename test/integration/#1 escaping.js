@@ -5,17 +5,13 @@
 /* global before: false */
 /* global after: false */
 
-/* jshint -W106 */
-var COV = process.env.npm_lifecycle_event === 'coverage';
-/* jshint +W106 */
-
 var RND = Math.random();
 var USER = 'pgpass-test-some:user:'.concat(RND);
 var PASS = 'pgpass-test-some:pass:'.concat(RND);
 var TEST_QUERY = 'SELECT CURRENT_USER AS me';
 
 var path = require('path');
-var pgPass = require( path.join('..', '..', COV ? 'lib-cov' : 'lib') );
+var pgPass = require( path.join('..', '..', 'lib') );
 var assert = require('assert');
 var spawn = require('child_process').spawn;
 var fs = require('fs');
@@ -36,21 +32,22 @@ if (process.env.RUN_INTEGRATION_TESTS) {
 		before(pre);
 		after(delUser);
 
-		// load the module after setting up PGPASSFILE
-		var pg = require('pg');
-		var pgNative = pg.native;
-
 		var config = {
 			user     : USER ,
 			database : 'postgres'
 		};
 
+		// load the module after setting up PGPASSFILE
+		var pg = require('pg');
+		var pgClient = new pg.Pool(config);
+		var pgNativeClient = new pg.native.Pool(config);
+
 		it('the JS client can connect', function(done){
-			pg.connect(config, checkConnection.bind(null, done));
+			pgClient.connect(checkConnection.bind(null, done));
 		});
 
 		it('the native client can connect', function(done){
-			pgNative.connect(config, checkConnection.bind(null, done));
+			pgNativeClient.connect(checkConnection.bind(null, done));
 		});
 
 		it('the psql client can connect', function(done){
@@ -120,7 +117,7 @@ function setupPassFile(cb) {
 			.replace('__USER__', pgEsc(USER))
 			.replace('__PASS__', pgEsc(PASS))
 		;
-		var buf = new Buffer(str);
+		var buf = Buffer.from(str);
 
 		fs.write(fd, buf, 0, buf.length, 0, function(err){
 			if (err) {

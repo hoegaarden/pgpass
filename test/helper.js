@@ -5,13 +5,9 @@
 /* global after: false */
 /* global before: false */
 
-/* jshint -W106 */
-var COV = process.env.npm_lifecycle_event === 'coverage';
-/* jshint +W106 */
-
 var assert = require('assert')
   , path = require('path')
-  , helper = require( path.join('..', COV ? 'lib-cov' : 'lib', 'helper') )
+  , helper = require( path.join('..', 'lib', 'helper') )
   , util = require('util')
   , Stream = require('resumer')
 ;
