@@ -3,13 +3,9 @@
 /* global describe: false */
 /* global it: false */
 
-/* jshint -W106 */
-var COV = process.env.npm_lifecycle_event === 'coverage';
-/* jshint +W106 */
-
 var assert = require('assert')
   , path = require('path')
-  , pgPass = require( path.join('..', COV ? 'lib-cov' : 'lib' , 'index') )
+  , pgPass = require( path.join('..', 'lib' , 'index') )
 ;
 
 
