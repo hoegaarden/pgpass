@@ -8,6 +8,8 @@
 var RND = Math.random();
 var USER = 'pgpass-test-some:user:'.concat(RND);
 var PASS = 'pgpass-test-some:pass:'.concat(RND);
+var POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
+var POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'postgres';
 var TEST_QUERY = 'SELECT CURRENT_USER AS me';
 
 var path = require('path');
@@ -135,7 +137,7 @@ function setupPassFile(cb) {
  */
 function genUser(cb) {
 	var cmd = esc('CREATE USER %I WITH PASSWORD %L', USER, PASS);
-	runPsqlCmd(cmd, cb);
+	runPsqlCmd(cmd, cb, POSTGRES_USER, POSTGRES_PASSWORD);
 }
 
 /**
@@ -143,13 +145,18 @@ function genUser(cb) {
  */
 function delUser(cb) {
 	var cmd = esc('DROP USER %I', USER);
-	runPsqlCmd(cmd, cb);
+	runPsqlCmd(cmd, cb, POSTGRES_USER, POSTGRES_PASSWORD);
 }
 
 /**
  * run a SQL command with psql
  */
-function runPsqlCmd(cmd, cb, user) {
+function runPsqlCmd(cmd, cb, user, pass) {
+	var env = Object.assign({}, process.env);
+	if (pass) {
+		env.PGPASSWORD = pass;
+	}
+
 	// the user running the tests needs to be able to connect to
 	// postgres as user 'postgres' without a password
 	var psql = spawn('psql', [
@@ -158,7 +165,7 @@ function runPsqlCmd(cmd, cb, user) {
 		'-d', 'postgres',
 		'-U', user || 'postgres',
 		'-c', cmd
-	]);
+	], {env: env});
 
 	var out = '';
 

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+
+    strategy:
+      matrix:
+        node: [15, 14, 12, 10]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install node dependencies
+        run: npm install --also=dev
+
+      - name: Run tests
+        env:
+          RUN_INTEGRATION_TESTS: 1
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        run: |
+          npm test
