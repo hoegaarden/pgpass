@@ -12,9 +12,6 @@
   },
   "author": "Hannes Hörl <hannes.hoerl+pgpass@snowreporter.com>",
   "license": "MIT",
-  "dependencies": {
-    "split2": "^4.1.0"
-  },
   "devDependencies": {
     "jshint": "^2.13.6",
     "mocha": "^11.3.0",
